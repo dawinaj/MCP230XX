@@ -1,4 +1,4 @@
-# ESP32 MCP3x0x ADC driver/library
+# ESP32 MCP23008 expander driver/library
 
 This is a single-file header-only C++ style library (see files in `main/include/`) for driving the **MCP23008** MicroChip's GPIO expander from an **ESP32** microcontroller.
 
