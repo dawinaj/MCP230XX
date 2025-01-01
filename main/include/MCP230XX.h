@@ -11,8 +11,6 @@
 
 #include <driver/i2c_master.h>
 
-#include "bitwise_print.h"
-
 //
 
 template <typename intT>
