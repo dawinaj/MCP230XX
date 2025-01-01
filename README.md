@@ -1,9 +1,13 @@
 # ESP32 MCP23008 expander driver/library
 
-This is a single-file header-only C++ style library (see files in `main/include/`) for driving the **MCP23008** MicroChip's GPIO expander from an **ESP32** microcontroller.
+This is a single-file header-only C++ style library (see files in `main/include/`) for driving the **MCP230XX** MicroChip's GPIO expander from an **ESP32** microcontroller.
 
 Currently supported are:
 - MCP23008
+- MCP23009
+- MCP23016
+- MCP23017
+- MCP23018
 
 
 It is based on another library:
@@ -14,7 +18,6 @@ It is based on another library:
 See example in `main/main.cpp`.
 
 - Move the files from `main/include/` to your include directory.
-- Install `ropg/i2c_manager` library.
-- #include the `MCP23008.h` in your code.
+- #include the `MCP230XX.h` in your code.
 - Create an object.
 - Done!
