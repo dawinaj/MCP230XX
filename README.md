@@ -1,4 +1,4 @@
-# ESP32 MCP23008 expander driver/library
+# ESP32 MCP230XX expander driver/library
 
 This is a single-file header-only C++ style library (see files in `main/include/`) for driving the **MCP230XX** MicroChip's GPIO expander from an **ESP32** microcontroller.
 
