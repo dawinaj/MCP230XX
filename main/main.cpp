@@ -1,43 +1,59 @@
-#define LOG_LOCAL_LEVEL ESP_LOG_VERBOSE
+// #define LOG_LOCAL_LEVEL ESP_LOG_VERBOSE
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
+
+#include <esp_log.h>
+#include <esp_check.h>
+
 #include <driver/gpio.h>
+#include <driver/spi_master.h>
+#include <driver/i2c_master.h>
 
-#include "MCP3XXX.h"
+#include "MCP230XX.h"
 
-static const char *TAG = "MCP_Test";
+#include "bitwise_print.h"
 
-void init_spi()
+static const char *TAG = "Test";
+
+i2c_master_bus_handle_t init_i2c()
 {
-	spi_bus_config_t bus_cfg = {
-		.mosi_io_num = GPIO_NUM_23,
-		.miso_io_num = GPIO_NUM_19,
-		.sclk_io_num = GPIO_NUM_18,
-		.quadwp_io_num = GPIO_NUM_NC,
-		.quadhd_io_num = GPIO_NUM_NC,
-		.data4_io_num = GPIO_NUM_NC,
-		.data5_io_num = GPIO_NUM_NC,
-		.data6_io_num = GPIO_NUM_NC,
-		.data7_io_num = GPIO_NUM_NC,
-		.max_transfer_sz = 0,
-		.flags = SPICOMMON_BUSFLAG_MASTER,
+	i2c_master_bus_config_t bus_cfg = {
+		.i2c_port = -1,
+		.sda_io_num = GPIO_NUM_21,
+		.scl_io_num = GPIO_NUM_22,
+		.clk_source = I2C_CLK_SRC_DEFAULT,
+		.glitch_ignore_cnt = 7,
+		.intr_priority = 0,
+		.trans_queue_depth = 0,
+		.flags = {
+			.enable_internal_pullup = true,
+		},
 	};
 
-	spi_bus_initialize(SPI3_HOST, &bus_cfg, 0);
+	i2c_master_bus_handle_t bus_handle;
+	ESP_ERROR_CHECK(i2c_new_master_bus(&bus_cfg, &bus_handle));
+
+	return bus_handle;
 }
+
+//
 
 extern "C" void app_main(void)
 {
-	esp_log_level_set("*", ESP_LOG_VERBOSE);
-	ESP_LOGI(TAG, "H E N L O B E N C");
-	vTaskDelay(pdMS_TO_TICKS(1000));
+	esp_log_level_set("*", ESP_LOG_DEBUG); // ESP_LOG_VERBOSE
+	
+	i2c_master_bus_handle_t i2c_host = init_i2c();
 
-	init_spi();
+	MCP23017 expander(i2c_host);
 
-	MCP3204 adc(SPI3_HOST, GPIO_NUM_5);
+	expander.init();
 
-	float voltage = adc.get_float_volt(0);
+	uint16_t pins;
+	while (1)
+	{
+		expander.get_pins(pins);
 
-	ESP_LOGI("MCP3XXX", "Voltage: %f V", voltage);
+		ESP_LOGW(TAG, PRIbit16, PRItobit16(pins));
+	}
 }
